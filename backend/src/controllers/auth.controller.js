@@ -2,7 +2,7 @@ import { User } from "../models/User.js";
 import bcrypt from "bcrypt";
 import { generateVerificationCode } from "../utils/generateVerificationCode.js";
 import { generateTokenAndSetCookie } from "../utils/generateTokenAndSetCookie.js";
-import { sendVerificationEmail } from "../mailtrap/emails.js";
+import { sendVerificationEmail, sendWelcomeEmail } from "../mailtrap/emails.js";
 
 export const signup = async (req, res) => {
     const { fullName, email, password } = req.body;
@@ -53,6 +53,44 @@ export const signup = async (req, res) => {
         res.status(400).json({ success: false, message: "Error occurred during signup", error: error.message });
     }  
 }
+
+export const verifyEmail = async (req, res) => {
+    const {code} = req.body;
+    try {
+        const user = await User.findOne({
+            verificationToken: code,
+            verificationExpiresAt: { $gt: new Date() } // Check if token is still valid
+        });
+        if (!user) {
+            return res.status(400).json({ success: false, message: "Invalid or expired verification code" });
+        }
+
+        // If token is valid, mark user as verified & clear token & token expiration
+        user.isVerified = true;
+        user.verificationToken = undefined; 
+        user.verificationExpiresAt = undefined; 
+        await user.save();
+
+        await sendWelcomeEmail(user.email, user.fullName);
+
+        res.status(200).json({ 
+            success: true, 
+            message: "Email verified successfully" ,
+            user: {
+                ...user._doc, // Spread operator to include all user fields
+                password: undefined, // Exclude password from response
+            },
+        });
+    } catch (error) {
+        console.error("Error in verifyEmail", error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Server error", 
+            error: error.message 
+        });
+    }
+}
+
 export const login = async (req, res) => {
     res.send("Login Route");
 }
