@@ -1,5 +1,6 @@
 import express from 'express';
 import "dotenv/config";
+import cookieParser from 'cookie-parser';
 import { connectDB } from './db/connectDB.js';
 import authRoutes from './routes/auth.route.js';
 
@@ -13,6 +14,7 @@ app.get('/', (req, res) => {
 
 
 app.use(express.json()); // Middleware to parse JSON bodies
+app.use(cookieParser()); // Middleware to parse cookies
 
 app.use("/api/auth", authRoutes);
 
