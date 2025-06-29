@@ -8,6 +8,8 @@ import { Toaster } from 'react-hot-toast';
 import { useAuthStore } from "./store/authStore";
 import Dashboard from "./pages/Dashboard";
 import LoadingSpinner from "./components/LoadingSpinner";
+import ForgotPasswordPage from "./pages/ForgotPasswordPage";
+import ResetPasswordPage from "./pages/ResetPasswordPage";
 
 // protect routes requiring authentication
 const ProtectedRoute = ( { children } ) => {
@@ -69,7 +71,26 @@ const App = () => {
           <RedirectAuthenticatedUser>
             <LoginPage />
           </RedirectAuthenticatedUser>} />
-        <Route path="/verify-email" element={<EmailVerificationPage />} />
+        <Route path="/verify-email" element={
+          <RedirectAuthenticatedUser>
+            <EmailVerificationPage />
+          </RedirectAuthenticatedUser>
+        } />
+        <Route path="/forgot-password" element={
+          <RedirectAuthenticatedUser>
+            <ForgotPasswordPage />
+          </RedirectAuthenticatedUser>
+        } />
+        <Route 
+          path="/reset-password/:token" 
+          element={
+
+            <RedirectAuthenticatedUser>
+              <ResetPasswordPage />
+            </RedirectAuthenticatedUser>
+
+          } 
+        />
       </Routes>
       <Toaster />
     </div>
