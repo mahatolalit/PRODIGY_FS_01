@@ -3,13 +3,16 @@ import { motion } from "framer-motion";
 import { Lock, Mail, Loader } from "lucide-react";
 import { Link } from "react-router-dom";
 import Input from "../components/Input";
+import { useAuthStore } from "../store/authStore";
 
 const LoginPage = () => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const { login, isLoading, error } = useAuthStore();
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
+    await login(email, password);
   };
 
   return (
@@ -17,7 +20,7 @@ const LoginPage = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="max-w-md w-full bg-gray-700 bg-opacity-10 backdrop-filter backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden"
+      className="max-w-md w-full bg-gray-900 bg-opacity-10 backdrop-filter backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden mx-5"
     >
       <div className="p-8">
         <h2 className="text-3xl font-bold text-center bg-[#e6e6e6] text-transparent bg-clip-text mb-6">
@@ -48,6 +51,8 @@ const LoginPage = () => {
               Forgot password?
             </Link>
           </div>
+
+          {error && <p className="text-red-500 font-semibold mb-2">{error}</p>}
 
           <motion.button
             className="w-full py-3 bg-[#e6e6e6] text-black font-semibold rounded-lg shadow-md focus:outline-none transition duration-200"

@@ -29,7 +29,7 @@ const SignUpPage = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="max-w-md w-full bg-gray-700 bg-opacity-10 backdrop-filter backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden"
+      className="max-w-md w-full bg-gray-900 bg-opacity-10 backdrop-filter backdrop-blur-xl rounded-2xl shadow-2xl overflow-hidden mx-5"
     >
       <div className="p-8">
         <h2 className="mb-6 text-3xl font-bold text-center bg-gradient-to-r from-[#ddeeff] via-[#def0fd] to-[#bdc3c7] text-transparent bg-clip-text">
