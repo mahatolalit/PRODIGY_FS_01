@@ -1,18 +1,28 @@
 import React from "react";
 import { motion } from "framer-motion";
 import Input from "../components/Input";
-import { Lock, Mail, User } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Loader, Lock, Mail, User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
 import PasswordStrengthMeter from "../components/PasswordStrengthMeter";
+import { useAuthStore } from "../store/authStore";
 
 const SignUpPage = () => {
-  const [name, setName] = React.useState("");
+  const [fullName, setfullName] = React.useState("");
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [isPasswordFocused, setIsPasswordFocused] = React.useState(false);
+  const navigate = useNavigate();
+  const {signup, error, isLoading} = useAuthStore();
 
-  const handleSignUp = (e) => {
+  const handleSignUp = async (e) => {
     e.preventDefault();
+
+    try {
+      await signup(email, password, fullName);
+      navigate("/verify-email");
+    } catch (error) {
+      console.error("Signup failed:", error);
+    }
   };
   return (
     <motion.div
@@ -31,8 +41,8 @@ const SignUpPage = () => {
             icon={User}
             type="text"
             placeholder="Full name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
+            value={fullName}
+            onChange={(e) => setfullName(e.target.value)}
           />
           <Input
             icon={Mail}
@@ -50,20 +60,25 @@ const SignUpPage = () => {
             onFocus={() => setIsPasswordFocused(true)}
             onBlur={() => setIsPasswordFocused(false)}
           />
+
+          {error && (
+            <p className="text-red-500 font-semibold mt-2">{error}</p>
+          )}
           <div
                 className={`transition-all duration-500 ease-in-out overflow-hidden ${isPasswordFocused ? 'opacity-100 scale-100 blur-0 max-h-40' : 'opacity-0 scale-95 blur-sm max-h-0'}`}
             >
                 <PasswordStrengthMeter password={password} />
             </div>
-
+          
 
           <motion.button
             className="mt-5 w-full py-3 bg-[#e6e6e6] text-black font-semibold rounded-lg shadow-md focus:outline-none transition duration-200"
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.98 }}
             type="submit"
+            disabled={isLoading || !fullName || !email || !password}
           >
-            Sign Up
+            {isLoading ? <Loader className="animate-spin mx-auto" size={24} /> : "Sign Up"}
           </motion.button>
         </form>
       </div>
